@@ -1,0 +1,55 @@
+body {
+	margin: 0;
+	font-family: Courier New, Courier, Lucida Sans Typewriter, Lucida Typewriter,
+		monospace;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+.h2 {
+	margin: 0;
+	font-family: Courier New, Courier, Lucida Sans Typewriter, Lucida Typewriter,
+		monospace;
+}
+
+code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+		monospace;
+}
+
+.button {
+	/* background-color: PapayaWhip; */
+	border: none;
+	color: Black;
+	/* padding: 10px 10px; */
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	/* font-size: 16px; */
+	margin: 4px 2px;
+	cursor: pointer;
+	border-radius: 20px;
+	animation: pulse 1s infinite;
+}
+.button:active {
+	animation: none;
+	background-color: LightBlue;
+	transform: scale(0.95);
+	box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.5);
+	transition: background-color 0.2s, transform 0.2s;
+}
+
+@keyframes pulse {
+	0% {
+		transform: scale(1);
+		box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.5);
+	}
+
+	50% {
+		transform: scale(1.1);
+		box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.5);
+	}
+	100% {
+		transform: scale(1);
+		box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.5);
+	}
+}
