@@ -2,6 +2,7 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 const API_KEY = process.env.REACT_APP_API_KEY_YT
 const API_URL = 'https://v6.exchangerate-api.com/v6/'
+const API_ENDPOINT = `${API_URL}${API_KEY}`
 const CurrencyConverter = () => {
   const [currencies, setCurrencies] = useState([])
   const [fromCurrency, setFromCurrency] = useState('')
@@ -13,7 +14,7 @@ const CurrencyConverter = () => {
   useEffect(() => {
     const fetchCurrencies = async () => {
       try {
-        const response = await axios.get(`${API_URL}${API_KEY}/latest/USD`)
+        const response = await axios.get(`${API_ENDPOINT}/latest/USD`)
         const data = response.data
         const currencyList = Object.keys(data.conversion_rates)
         setCurrencies(currencyList)
@@ -31,7 +32,7 @@ const CurrencyConverter = () => {
   useEffect(() => {
     const fetchExchangeRate = async () => {
       try {
-        const response = await axios.get(`${API_URL}${API_KEY}/latest/${fromCurrency}`)
+        const response = await axios.get(`${API_ENDPOINT}/latest/${fromCurrency}`)
         const data = response.data
         setExchangeRate(data.conversion_rates[toCurrency])
       } catch (error) {
