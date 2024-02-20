@@ -53,7 +53,13 @@ const CurrencyConverter = () => {
 
   const handleAmountChange = (event) => {
     const value = event.target.value.replace(/\D/g, '')
-    setAmount(value)
+    if (value === '' || isNaN(value)) {
+      setAmount(0)
+    }
+    else {
+      setAmount(parseFloat(value))
+    }
+
   }
 
   const handleSwapCurrencies = () => {
@@ -63,7 +69,13 @@ const CurrencyConverter = () => {
   }
 
   useEffect(() => {
-    setConvertedAmount((amount * exchangeRate).toFixed(2))
+    if (amount !== 0 && exchangeRate !== 0) {
+      setConvertedAmount((amount * exchangeRate).toFixed(2))
+    }
+    else {
+      setConvertedAmount(0.00)
+    }
+
   }, [amount, exchangeRate])
 
   return (
@@ -85,7 +97,7 @@ const CurrencyConverter = () => {
             <option key={currency}>{currency}</option>
           ))}
         </select>
-        <input type="text" value={convertedAmount} readOnly />
+        <span>{convertedAmount}</span>
       </div>
       <button className='button' onClick={handleSwapCurrencies}>Поменять туда сюда
 
