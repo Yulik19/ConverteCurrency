@@ -1,11 +1,14 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-const API_KEY = process.env.REACT_APP_API_KEY_YT
-const API_URL = 'https://v6.exchangerate-api.com/v6/'
-const API_ENDPOINT = `${API_URL}${API_KEY}`
+
 const CurrencyConverter = () => {
+  const API_URL = 'https://v6.exchangerate-api.com/v6/'
+  const API_KEY = process.env.REACT_APP_API_KEY_YT
+  const API_ENDPOINT = `${API_URL}${API_KEY}`
+
+
   const [currencies, setCurrencies] = useState([])
-  const [fromCurrency, setFromCurrency] = useState('')
+  const [fromCurrency, setFromCurrency] = useState('USD')
   const [toCurrency, setToCurrency] = useState('')
   const [exchangeRate, setExchangeRate] = useState(0)
   const [amount, setAmount] = useState(0)
@@ -14,7 +17,11 @@ const CurrencyConverter = () => {
   useEffect(() => {
     const fetchCurrencies = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINT}/latest/USD`)
+        const response = await axios.get(`${API_ENDPOINT}/latest/USD`, {
+          headers: {
+            'Access-Control-Allow-Origin': '*', "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS"
+          }
+        })
         const data = response.data
         const currencyList = Object.keys(data.conversion_rates)
         setCurrencies(currencyList)
@@ -32,7 +39,12 @@ const CurrencyConverter = () => {
   useEffect(() => {
     const fetchExchangeRate = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINT}/latest/${fromCurrency}`)
+        const response = await axios.get(`${API_ENDPOINT}/latest/${fromCurrency}`, {
+          headers: {
+            'Access-Control-Allow-Origin': '*', "Access-Control-Allow-Methods": "GET,PUT,POST"
+
+          }
+        })
         const data = response.data
         setExchangeRate(data.conversion_rates[toCurrency])
       } catch (error) {
@@ -53,15 +65,14 @@ const CurrencyConverter = () => {
 
   const handleAmountChange = (event) => {
     const value = event.target.value.replace(/\D/g, '')
-    if (value === '' || isNaN(value)) {
-      setAmount(0)
-    }
-    else {
-      setAmount(parseFloat(value))
-    }
-
+    setAmount(value)
+    setConvertedAmount(((parseFloat(value) * exchangeRate) || 0).toFixed(2))
   }
-
+  const handleConvertedAmountChange = (event) => {
+    const value = event.target.value.replace(/\D/g, '')
+    setConvertedAmount(value)
+    setAmount(((parseFloat(value) / exchangeRate) || 0).toFixed(2))
+  }
   const handleSwapCurrencies = () => {
     const temp = fromCurrency
     setFromCurrency(toCurrency)
@@ -69,13 +80,7 @@ const CurrencyConverter = () => {
   }
 
   useEffect(() => {
-    if (amount !== 0 && exchangeRate !== 0) {
-      setConvertedAmount((amount * exchangeRate).toFixed(2))
-    }
-    else {
-      setConvertedAmount(0.00)
-    }
-
+    setConvertedAmount((amount * exchangeRate) || 0)
   }, [amount, exchangeRate])
 
   return (
@@ -97,7 +102,7 @@ const CurrencyConverter = () => {
             <option key={currency}>{currency}</option>
           ))}
         </select>
-        <span>{convertedAmount}</span>
+        <input type="text" value={convertedAmount} onChange={handleConvertedAmountChange} />
       </div>
       <button className='button' onClick={handleSwapCurrencies}>Поменять туда сюда
 
