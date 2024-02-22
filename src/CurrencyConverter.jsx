@@ -1,12 +1,9 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-
+const API_URL = 'https://v6.exchangerate-api.com/v6/'
+const API_KEY = process.env.REACT_APP_API_KEY_YT
+const API_ENDPOINT = `${API_URL}${API_KEY}`
 const CurrencyConverter = () => {
-  const API_URL = 'https://v6.exchangerate-api.com/v6/'
-  const API_KEY = process.env.REACT_APP_API_KEY_YT
-  const API_ENDPOINT = `${API_URL}${API_KEY}`
-
-
   const [currencies, setCurrencies] = useState([])
   const [fromCurrency, setFromCurrency] = useState('USD')
   const [toCurrency, setToCurrency] = useState('')
