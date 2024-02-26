@@ -8,7 +8,7 @@ const CurrencyConverter = () => {
   const [fromCurrency, setFromCurrency] = useState('USD')
   const [toCurrency, setToCurrency] = useState('')
   const [exchangeRate, setExchangeRate] = useState(0)
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState('')
   const [convertedAmount, setConvertedAmount] = useState(0)
 
   useEffect(() => {
@@ -53,32 +53,37 @@ const CurrencyConverter = () => {
   }, [fromCurrency, toCurrency])
 
   const handleFromCurrencyChange = (event) => {
+    setConvertedAmount('')
+    setAmount('')
     setFromCurrency(event.target.value)
   }
 
   const handleToCurrencyChange = (event) => {
+    setConvertedAmount('')
+    setAmount('')
     setToCurrency(event.target.value)
   }
 
   const handleAmountChange = (event) => {
     const value = event.target.value.replace(/\D/g, '')
     setAmount(value)
-    setConvertedAmount(((parseFloat(value) * exchangeRate) || 0).toFixed(2))
+    setConvertedAmount(((parseFloat(value) * exchangeRate) || '').toFixed(2))
   }
   const handleConvertedAmountChange = (event) => {
     const value = event.target.value.replace(/\D/g, '')
     setConvertedAmount(value)
-    setAmount(((parseFloat(value) / exchangeRate) || 0).toFixed(2))
+    setAmount(((parseFloat(value) / exchangeRate).toFixed(2) || ''))
   }
   const handleSwapCurrencies = () => {
-    const temp = fromCurrency
-    setFromCurrency(toCurrency)
-    setToCurrency(temp)
+    const tempFromCurrency = fromCurrency
+    const tempToCurrency = toCurrency
+    setFromCurrency(tempToCurrency)
+    setToCurrency(tempFromCurrency)
   }
 
   useEffect(() => {
-    setConvertedAmount((amount * exchangeRate) || 0)
-  }, [amount, exchangeRate])
+    setConvertedAmount((amount * exchangeRate).toFixed(2) || '')
+  }, [amount, exchangeRate, fromCurrency, toCurrency])
 
   return (
     <div>
