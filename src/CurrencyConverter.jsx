@@ -65,11 +65,12 @@ const CurrencyConverter = () => {
   }
   const handleValueChange = (value, setMainValue, setConvertedValue, exchangeRate) => {
     const parsedValue = parseFloat(value)
-    if (!isNaN(parsedValue)) {
-      setMainValue(parsedValue)
-      setConvertedValue((parsedValue * exchangeRate !== 0 ? (parsedValue * exchangeRate).toFixed(2) : 0))
+
+    if (!isNaN(parsedValue) || parsedValue === 0) {
+      setMainValue(value)
+      setConvertedValue((parsedValue * exchangeRate || '').toFixed(2))
     } else {
-      setMainValue('')
+      setMainValue(null)
       setConvertedValue('')
     }
   }
