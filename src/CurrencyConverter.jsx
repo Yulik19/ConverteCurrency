@@ -53,25 +53,28 @@ const CurrencyConverter = () => {
   }, [fromCurrency, toCurrency])
 
   const handleFromCurrencyChange = (event) => {
-    setConvertedAmount('')
-    setAmount('')
+    setConvertedAmount(0)
+    setAmount(0)
     setFromCurrency(event.target.value)
   }
 
   const handleToCurrencyChange = (event) => {
-    setConvertedAmount('')
-    setAmount('')
+    setConvertedAmount(0)
+    setAmount(0)
     setToCurrency(event.target.value)
+  }
+  const roundToTwo = (num) => {
+    return Math.round(num * 100) / 100
   }
   const handleValueChange = (value, setMainValue, setConvertedValue, exchangeRate) => {
     const parsedValue = parseFloat(value)
 
     if (!isNaN(parsedValue) || parsedValue === 0) {
-      setMainValue(value)
-      setConvertedValue((parsedValue * exchangeRate || '').toFixed(2))
+      setMainValue(roundToTwo(parsedValue))
+      setConvertedValue(roundToTwo(parsedValue * exchangeRate))
     } else {
-      setMainValue(null)
-      setConvertedValue('')
+      setMainValue(0)
+      setConvertedValue(0)
     }
   }
   const handleAmountChange = (event) => {
@@ -90,7 +93,7 @@ const CurrencyConverter = () => {
   }
 
   useEffect(() => {
-    setConvertedAmount((amount * exchangeRate).toFixed(2) || '')
+    setConvertedAmount(roundToTwo(amount * exchangeRate))
   }, [amount, exchangeRate, fromCurrency, toCurrency])
 
   return (
@@ -114,9 +117,7 @@ const CurrencyConverter = () => {
         </select>
         <input type="text" value={convertedAmount} onChange={handleConvertedAmountChange} />
       </div>
-      <button className='button' onClick={handleSwapCurrencies}>Поменять туда сюда
-
-      </button>
+      <button className='button' onClick={handleSwapCurrencies}>Поменять туда сюда</button>
     </div>
   )
 }
