@@ -11,57 +11,32 @@ const CurrencyConverter = () => {
   const [amount, setAmount] = useState(0)
   const [convertedAmount, setConvertedAmount] = useState(0)
 
-  useEffect(() => {
-    const fetchCurrencies = async () => {
-      try {
-        const response = await axios.get(`${API_ENDPOINT}/latest/USD`, {
-          headers: {
-            'Access-Control-Allow-Origin': '*', "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS"
-          }
-        })
-        const data = response.data
-        const currencyList = Object.keys(data.conversion_rates)
-        setCurrencies(currencyList)
-        setFromCurrency(currencyList[0])
-        setToCurrency(currencyList[1])
-        setExchangeRate(data.conversion_rates[currencyList[1]])
-      } catch (error) {
-        console.error('Error fetching currencies:', error)
-      }
+  const fetchCurrenciesAndRates = async (from, to) => {
+    try {
+      const response = await axios.get(`${API_ENDPOINT}/latest/${from}`, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET,PUT,POST',
+        },
+      })
+      const data = response.data
+      const currencyList = Object.keys(data.conversion_rates)
+      setCurrencies(currencyList)
+      setToCurrency(currencyList[1])
+      setExchangeRate(data.conversion_rates[to])
+    } catch (error) {
+      console.error('Error fetching currencies and rates:', error)
     }
-
-    fetchCurrencies()
-  }, [])
-
-  useEffect(() => {
-    const fetchExchangeRate = async () => {
-      try {
-        const response = await axios.get(`${API_ENDPOINT}/latest/${fromCurrency}`, {
-          headers: {
-            'Access-Control-Allow-Origin': '*', "Access-Control-Allow-Methods": "GET,PUT,POST"
-
-          }
-        })
-        const data = response.data
-        setExchangeRate(data.conversion_rates[toCurrency])
-      } catch (error) {
-        console.error('Error fetching exchange rate:', error)
-      }
-    }
-
-    fetchExchangeRate()
-  }, [fromCurrency, toCurrency])
-
-  const handleFromCurrencyChange = (event) => {
-    setConvertedAmount(0)
-    setAmount(0)
-    setFromCurrency(event.target.value)
   }
 
-  const handleToCurrencyChange = (event) => {
+  useEffect(() => {
+    fetchCurrenciesAndRates('USD', 'USD')
+  }, [])
+
+  const handleCurrencyChange = (event, setState) => {
     setConvertedAmount(0)
     setAmount(0)
-    setToCurrency(event.target.value)
+    setState(event.target.value)
   }
   const roundToTwo = (num) => {
     return Math.round(num * 100) / 100
@@ -69,7 +44,7 @@ const CurrencyConverter = () => {
   const handleValueChange = (value, setMainValue, setConvertedValue, exchangeRate) => {
     const parsedValue = parseFloat(value)
 
-    if (!isNaN(parsedValue) || parsedValue === 0) {
+    if (!isNaN(parsedValue)) {
       setMainValue(roundToTwo(parsedValue))
       setConvertedValue(roundToTwo(parsedValue * exchangeRate))
     } else {
@@ -87,21 +62,20 @@ const CurrencyConverter = () => {
   }
   const handleSwapCurrencies = () => {
     const tempFromCurrency = fromCurrency
-    const tempToCurrency = toCurrency
-    setFromCurrency(tempToCurrency)
+    setFromCurrency(toCurrency)
     setToCurrency(tempFromCurrency)
+    fetchCurrenciesAndRates(toCurrency, tempFromCurrency)
   }
 
   useEffect(() => {
     setConvertedAmount(roundToTwo(amount * exchangeRate))
-  }, [amount, exchangeRate, fromCurrency, toCurrency])
-
+  }, [amount, exchangeRate])
   return (
     <div>
       <h2>Конвертер валют</h2>
       <div>
         <label>Перевод из:</label>
-        <select value={fromCurrency} onChange={handleFromCurrencyChange}>
+        <select value={fromCurrency} onChange={(event) => handleCurrencyChange(event, setFromCurrency)}>
           {currencies.map((currency) => (
             <option key={currency}>{currency}</option>
           ))}
@@ -109,8 +83,8 @@ const CurrencyConverter = () => {
         <input type="contenteditable" value={amount} onChange={handleAmountChange} />
       </div>
       <div>
-        <label>Перевод в:   </label>
-        <select value={toCurrency} onChange={handleToCurrencyChange}>
+        <label>Перевод в:</label>
+        <select value={toCurrency} onChange={(event) => handleCurrencyChange(event, setToCurrency)}>
           {currencies.map((currency) => (
             <option key={currency}>{currency}</option>
           ))}
